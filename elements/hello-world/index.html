@@ -1,0 +1,17 @@
+<link rel=import href=../../bower_components/polymer/polymer.html>
+<polymer-element name="hello-world">
+  <template>
+    <style>
+      #hi {
+        background-color: hotpink;
+      }
+    </style>
+    <span id=hi>Hello. My name is {{viewModel.name}}. The light dom is: <content></content>. This is my Shadow DOM.</span>
+    <form>
+      <label>hi!
+        <input type=text>
+      </label>
+    </form>
+  </template>
+  <script src=index.js></script>
+</polymer-element>

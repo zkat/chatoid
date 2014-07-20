@@ -1,0 +1,16 @@
+{
+  "name": "polychat",
+  "version": "0.0.0",
+  "authors": [
+    "Kat Marchán <kzm@sykosomatic.org>"
+  ],
+  "license": "Public Domain",
+  "private": true,
+  "dependencies": {
+    "platform": "Polymer/platform#~0.3.2",
+    "polymer": "~0.3.3",
+    "bacon": "~0.7.14",
+    "bacon-browser": "~0.0.6",
+    "jquery": "~2.1.1"
+  }
+}
