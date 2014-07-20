@@ -1,15 +1,18 @@
 <link rel=import href=../../bower_components/polymer/polymer.html>
+<link rel=import href=../../elements/video-list/index.html>
 <polymer-element name="video-strip">
   <template>
     <style>
       .video-strip {
         background-color: #cecece;
-        height: 5em;
+        height: 192px;
         width: 100%;
         overflow-x: scroll;
       }
     </style>
     <div class="video-strip">
+      <video-list>
+      </video-list>
     </div>
   </template>
   <script src=index.js></script>
