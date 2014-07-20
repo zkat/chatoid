@@ -11,6 +11,7 @@
     "polymer": "~0.3.3",
     "bacon": "~0.7.14",
     "bacon-browser": "~0.0.6",
-    "jquery": "~2.1.1"
+    "jquery": "~2.1.1",
+    "fingerprint": "~0.5.4"
   }
 }
