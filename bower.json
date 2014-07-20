@@ -13,6 +13,7 @@
     "bacon-browser": "~0.0.6",
     "jquery": "~2.1.1",
     "fingerprint": "~0.5.4",
-    "core-toolbar": "Polymer/core-toolbar#~0.3.4"
+    "core-toolbar": "Polymer/core-toolbar#~0.3.4",
+    "sockjs": "~0.3.4"
   }
 }

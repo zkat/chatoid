@@ -1,12 +1,12 @@
 var gulp = require("gulp"),
-	gutil = require("gulp-util"),
-	rename = require("gulp-rename"),
-	rimraf = require("rimraf"),
-	connect = require("gulp-connect"),
-	vulcanize = require("vulcanize"),
+    gutil = require("gulp-util"),
+    rename = require("gulp-rename"),
+    rimraf = require("rimraf"),
+    server = require("./server"),
+    vulcanize = require("vulcanize"),
     _ = require("lodash"),
-	webpack = require("webpack"),
-	webpackConfig = require("./webpack.config.js");
+    webpack = require("webpack"),
+    webpackConfig = require("./webpack.config.js");
 
 var paths = {
   bower_components: "bower_components/{polymer,platform}/*",
@@ -20,7 +20,7 @@ gulp.task("clean", function(cb) {
 });
 
 gulp.task("connect", function() {
-  connect.server();
+  server(8080);
 });
 
 gulp.task("webpack-watch", function() {
@@ -29,7 +29,7 @@ gulp.task("webpack-watch", function() {
   }, webpackConfig)).watch(200, function(err, stats) {
     if(err) throw new gutil.PluginError("webpack", err);
     gutil.log("[webpack]", stats.toString({
-	  color: true
+      color: true
     }));
   });
 });
@@ -40,23 +40,23 @@ gulp.task("webpack", function(callback) {
   }, webpackConfig)).run(function(err, stats) {
     if(err) throw new gutil.PluginError("webpack", err);
     gutil.log("[webpack]", stats.toString({
-	  color: true
+      color: true
     }));
-	callback();
+    callback();
   });
 });
 
 gulp.task("vulcanize", function(callback) {
   var out = "__vulcanized.html";
   vulcanize.setOptions({
-	input: paths.index,
-	output: out
+    input: paths.index,
+    output: out
   }, function() {
-	vulcanize.processDocument();
-	gulp.src(out)
-	  .pipe(rename("index.html"))
-	  .pipe(gulp.dest(paths.dist))
-	  .on("end", function() {
+    vulcanize.processDocument();
+    gulp.src(out)
+      .pipe(rename("index.html"))
+      .pipe(gulp.dest(paths.dist))
+      .on("end", function() {
         rimraf(out, callback);
       });
   });
@@ -64,7 +64,7 @@ gulp.task("vulcanize", function(callback) {
 
 gulp.task("move-bower", function() {
   return gulp.src(paths.bower_components)
-	.pipe(gulp.dest("dist/bower_components/"));
+    .pipe(gulp.dest("dist/bower_components/"));
 });
 
 gulp.task("move-bower-watch", ["move-bower"], function() {
