@@ -1,0 +1,26 @@
+<link rel=import href=../../bower_components/polymer/polymer.html>
+<link rel=import href=../../elements/video-service/index.html>
+<polymer-element name="video-list">
+  <template>
+    <style>
+      .video-strip__detail {
+        border: solid 1px black;
+        height: 190px;
+        width: 190px;
+        float: left;
+      }
+      .video-strip__list {
+        background-color: #cecece;
+      }
+    </style>
+    <video-service videos="{{videos}}">
+    </video-service>
+    <div class="video-strip__list" style="width: 2090px">
+      <template repeat="{{video in videos}}">
+        <div class="video-strip__detail">
+        </div>
+      </template>
+    </div>
+  </template>
+  <script src=index.js></script>
+</polymer-element>
