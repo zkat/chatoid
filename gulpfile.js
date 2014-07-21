@@ -12,6 +12,7 @@ var paths = {
   bower_components: "bower_components/{polymer,platform}/*",
   index: "index.html",
   elements: "elements/*",
+  styles: "styles/*",
   dist: "dist/"
 };
 
@@ -71,11 +72,19 @@ gulp.task("move-bower-watch", ["move-bower"], function() {
   gulp.watch(paths.bower_components, ["move-bower"]);
 });
 
+gulp.task("move-styles", function() {
+  return gulp.src(paths.styles)
+    .pipe(gulp.dest("dist/styles/"));
+});
+
+gulp.task("move-styles-watch", ["move-styles"], function() {
+  gulp.watch(paths.styles, ["move-styles"]);
+});
 gulp.task("vulcanize-watch", ["vulcanize"], function() {
   gulp.watch([paths.index, paths.elements+"*/*.{html,css}"], ["vulcanize"]);
 });
 
-gulp.task("build", ["webpack", "vulcanize", "move-bower"]);
-gulp.task("watch", ["webpack-watch", "vulcanize-watch", "move-bower-watch"]);
+gulp.task("build", ["webpack", "vulcanize", "move-bower", "move-styles"]);
+gulp.task("watch", ["webpack-watch", "vulcanize-watch", "move-bower-watch", "move-styles-watch"]);
 gulp.task("dev", ["watch", "connect"]);
 gulp.task("default", ["build"]);
