@@ -1,0 +1,25 @@
+<link rel=import href=../../bower_components/polymer/polymer.html>
+<link rel=import href=../../elements/chat-service/index.html>
+<polymer-element name="chat-output">
+  <template>
+    <style>
+      .chat-output__list {
+        min-height: 500px;
+        color: #BADA55;
+        border: solid 1px black;
+        background-color: #0B5355;
+      }
+    </style>
+    <chat-service messages="{{messages}}">
+    </chat-service>
+    </video-service>
+    <div class="chat-output__list">
+      <p><b>famulus:</b> Test Message Here!  Hello World.</p>
+      <template repeat="{{message in messages}}">
+        <p class="chat-output__detail">
+        </p>
+      </template>
+    </div>
+  </template>
+  <script src=index.js></script>
+</polymer-element>
