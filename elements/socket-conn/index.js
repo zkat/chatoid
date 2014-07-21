@@ -1,72 +1,97 @@
 module Polymer from "polymer";
-module Genfun from "genfun";
+module Bacon from "bacon";
 module $ from "jquery";
-import {clone, init} from "./proto";
-import {partial, forEach, contains, without} from "lodash";
+import {partial, forEach} from "lodash";
 module Q from "q";
 import "sockjs";
 
 var Sock = window.SockJS;
 
-var MAX_RECONNECT_ATTEMPTS = 100;
-var INITIAL_RECONNECT_DELAY = 500;
-
-var SocketConn = clone(),
-    onMessage = new Genfun();
-onMessage.addMethod([], function() {});
-
-init.addMethod([SocketConn], function(conn) {
-  conn.authUrl =
-    window.location.protocol + "//" + window.location.host + "/wsauth";
-  conn.state = "connecting";
-  conn.observers = {};
-  conn.reqNum = 0;
-  conn.reqs = {};
-  conn.backlog = [];
-  conn.reconnectAttempts = 0;
-  conn.opts = {};
-  initSock(conn);
+Polymer("socket-conn", {
+  publish: {
+    maxReconnectAttempts: 100,
+    initialReconnectDelay: 500,
+    requestTimeout: 30000,
+    authUrl: "/wsauth"
+  },
+  send: send,
+  request: request,
+  channels: [],
+  reconnect: function() {
+    if (this.status !== "open") {
+      this.reconnectAttempts = 0;
+      tryReconnect(this);
+    }
+  },
+  ready: function() {
+    var conn = this;
+    conn._bus = new Bacon.Bus();
+    conn.stream = conn._bus.toEventStream();
+    conn.status = "connecting";
+    conn.statusProperty = conn._bus
+      .filter((msg) => msg.type === "status")
+      .map(".status")
+      .toProperty();
+    conn._bus.push({type: "status", status: conn.status});
+    loadChannels(conn);
+    conn.onMutation(this, function() {
+      loadChannels(this);
+    });
+    conn.reqNum = 0;
+    conn.reqs = {};
+    conn.backlog = [];
+    conn.reconnectAttempts = 0;
+    conn.opts = {};
+    initSock(conn);
+  }
 });
 
+function loadChannels(conn) {
+  forEach(conn.querySelectorAll(":host > socket-channel"), function(el) {
+    if (el.namespace) {
+      conn.channels[el.namespace] = el;
+    }
+  }, conn);
+}
 function initSock(conn) {
   return $.get(conn.authUrl, function(resp) {
-    if (conn.state === "closed") { return; }
+    if (conn.status === "closed") { return; }
     conn.url = resp.data.wsUrl;
     conn.auth = resp.data.auth;
     conn.socket = new Sock(conn.url, null, conn.opts);
     conn.socket.onopen = partial(handleOpen, conn);
-    conn.socket.onmessage = partial(handleMessage, conn, onMessage);
+    conn.socket.onmessage = partial(handleMessage, conn);
     conn.socket.onclose = partial(tryReconnect, conn);
   }).fail(partial(tryReconnect, conn));
 }
 
-// We have a singleton connection we reuse everywhere.
-var CONN = clone(SocketConn);
-
 function handleOpen(conn) {
   conn.reconnectAttempts = 0;
   conn.socket.send(conn.auth);
-  conn.state = "open";
+  conn.status = "open";
+  conn._bus.push({type: "status", status: conn.status});
   var oldMsg;
   while ((conn.socket.readyState === Sock.OPEN) &&
          (oldMsg = conn.backlog.shift())) {
-    rawSend(oldMsg);
+    rawSend(conn, oldMsg);
   }
 }
 
 function tryReconnect(conn) {
-  if (conn.reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+  if (conn.reconnectAttempts < conn.maxReconnectAttempts) {
     conn.reconnectAttempts++;
-    conn.state = "reconnecting";
+    conn.status = "reconnecting";
+    conn._bus.push({type: "status", status: conn.status});
     window.setTimeout(function() {
       initSock(conn);
-    }, conn.reconnectAttempts * INITIAL_RECONNECT_DELAY);
+    }, conn.reconnectAttempts * conn.initialReconnectDelay);
   } else {
-    conn.state = "closed";
+    conn.status = "closed";
+    conn._bus.push({type: "status", status: conn.status});
   }
 }
 
-function handleMessage(conn, handler, sockMsg) {
+function handleMessage(conn, sockMsg) {
   var msg = JSON.parse(sockMsg.data);
   switch (msg.type) {
   case "reply":
@@ -84,12 +109,7 @@ function handleMessage(conn, handler, sockMsg) {
     delete conn.reqs[msg.req];
     break;
   case "msg":
-    var observers = conn.observers[msg.ns] ||
-      (console.warn("Unknown namespace: ", msg.ns),
-       []);
-    forEach(observers, function(obs) {
-      handler.call(null, obs, msg.data);
-    });
+    conn._bus.push(msg);
     break;
   default:
     console.warn("Unexpected message: ", msg);
@@ -97,56 +117,24 @@ function handleMessage(conn, handler, sockMsg) {
   }
 }
 
-function listen(observer, namespace) {
-  if (!CONN.observers[namespace]) { CONN.observers[namespace] = []; }
-  if (!contains(CONN.observers[namespace], observer)) {
-    CONN.observers[namespace].push(observer);
-  }
-}
-
-function unlisten(observer) {
-  CONN.observers = without(CONN.observers, observer);
-}
-
-function rawSend(data) {
-  if (CONN.state === "closed") {
+function rawSend(conn, data) {
+  if (conn.status === "closed") {
     throw new Error("connection is closed");
-  } else if (CONN.socket && CONN.socket.readyState === Sock.OPEN) {
-    var json = JSON.stringify(data);
-    CONN.socket.send(json);
+  } else if (conn.socket && conn.socket.readyState === Sock.OPEN) {
+    conn.socket.send(data);
   } else {
-    CONN.backlog.push(data);
+    conn.backlog.push(data);
   }
 }
 
 function send(data, namespace) {
-  rawSend({type: "msg", ns: namespace, data: data});
+  rawSend(this, JSON.stringify({type: "msg", ns: namespace, data: data}));
 }
 
 function request(data, namespace) {
   var deferred = Q.defer(),
-      req = ++CONN.reqNum;
-  rawSend({type: "req", req: req, ns: namespace, data: data});
-  CONN.reqs[req] = deferred;
-  return Q.timeout(deferred.promise, 30000);
+      req = ++this.reqNum;
+  rawSend(this, JSON.stringify({type: "req", req: req, ns: namespace, data: data}));
+  this.reqs[req] = deferred;
+  return Q.timeout(deferred.promise, this.requestTimeout);
 }
-
-function reconnect() {
-  if (CONN.state !== "open") {
-    CONN.reconnectAttempts = 0;
-    tryReconnect(CONN);
-  }
-}
-
-Polymer("socket-conn", {
-  conn: CONN,
-  onMessage: onMessage,
-  listen: listen,
-  unlisten: unlisten,
-  send: send,
-  request: request,
-  reconnect: reconnect,
-  ready: function() {
-    console.log("Socket connection established");
-  }
-});

@@ -16,7 +16,7 @@ var web = clone(webServer.WebServer, {
 });
 
 var services = {
-  chatService: clone(require("./services/chat").service, "chat")
+  chat: clone(require("./services/chat").service, "chat")
 };
 
 var echoService;
@@ -24,7 +24,7 @@ var echoService;
 if (config.env !== "production") {
   // Pieces together stack traces for promises. Has a performance hit.
   require("q").longStackSupport = true;
-  services.echoService = clone(require("./services/echo").service, "echo");
+  services.echo = clone(require("./services/echo").service, "echo");
 }
 
 clone(require("./socket-server").SocketServer, web.http, {
