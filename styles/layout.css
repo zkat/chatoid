@@ -1,0 +1,12 @@
+.two-column__container {
+  width: 100%;
+}
+
+.two-column__primary {
+  width: 70%;
+}
+
+.two-column__secondary {
+  width: 28%;
+  float: right;
+}
