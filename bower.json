@@ -9,7 +9,7 @@
   "dependencies": {
     "platform": "Polymer/platform#~0.3.2",
     "polymer": "~0.3.3",
-    "bacon": "~0.7.14",
+    "bacon": "~0.7.18",
     "bacon-browser": "~0.0.6",
     "jquery": "~2.1.1",
     "fingerprint": "~0.5.4",

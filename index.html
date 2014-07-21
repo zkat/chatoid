@@ -8,10 +8,15 @@
   <link rel="import" href="bower_components/polymer/polymer.html">
   <link rel="import" href="elements/video-strip/index.html">
   <link rel="import" href="elements/socket-conn/index.html">
+  <link rel="import" href="elements/socket-channel/index.html">
   <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
 </head>
 <body>
-  <socket-conn></socket-conn>
+  <socket-conn auth-url="/wsauth"
+               max-reconnect-attempts=100
+               initial-reconnect-delay=500>
+    <socket-channel id="chat-channel" namespace=chat></socket-channel>
+  </socket-conn>
   <core-toolbar>
     <h1>Chatoid</h1>
   </core-toolbar>

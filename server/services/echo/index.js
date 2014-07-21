@@ -14,9 +14,8 @@ init.addMethod([EchoService], function(chat) {
   console.log("Initializing EchoService", chat);
 });
 
-onMessage.addMethod([EchoService], function(chat, client, msg) {
-  console.log("Echoing ", msg);
-  broadcast(client, msg);
+onMessage.addMethod([EchoService], function(chat, data, info) {
+  broadcast(info.from, data, info.namespace);
 });
 
 module.exports.service = EchoService;
