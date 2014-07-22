@@ -26,7 +26,8 @@ module.exports = {
     modulesDirectories: [__dirname, "bower_components", "node_modules"]
   },
   externals: {
-    polymer: "var Polymer"
+    polymer: "var Polymer",
+    peerjs: "var Peer"
   },
   module: {
     loaders: [{
