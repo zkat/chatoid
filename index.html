@@ -3,31 +3,45 @@
   <meta charset="utf-8">
   <title>Chatoid</title>
   <script src=bower_components/platform/platform.js></script>
+  <script src=bower_components/peerjs/peer.js></script>
   <link rel="stylesheet" type="text/css" href="styles/reset.css">
   <link rel="stylesheet" type="text/css" href="styles/layout.css">
   <script src=index.js></script>
   <link rel="import" href="bower_components/polymer/polymer.html">
-  <link rel="import" href="elements/video-strip/index.html">
-  <link rel="import" href="elements/chat-output/index.html">
-  <link rel="import" href="elements/socket-conn/index.html">
-  <link rel="import" href="elements/socket-channel/index.html">
+  <link rel="import" href="elements/user-media/index.html">
+  <link rel="import" href="elements/peer-call/index.html">
+  <link rel="import" href="elements/peer-call-manager/index.html">
   <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
+  <style>
+    video { height: 300px; width: 300px; }
+  </style>
 </head>
 <body>
-  <socket-conn auth-url="/wsauth"
-               max-reconnect-attempts=100
-               initial-reconnect-delay=500>
-    <socket-channel id="chat-channel" namespace=chat></socket-channel>
-  </socket-conn>
   <core-toolbar>
     <h1>Chatoid</h1>
   </core-toolbar>
-  <video-strip></video-strip>
-  <div class="two-column__container">
-    <div class="two-column__primary">
-      <chat-output></chat-output>
-    </div>
-    <div class="two-column__secondary">
-    </div>
-  </div>
+  <template id=main is="auto-binding">
+    <user-media stream="{{stream}}" src="{{streamUrl}}"></user-media>
+    <video autoplay src="{{streamUrl}}"></video>
+    Your Peer Id: {{ownId}}
+    <form on-submit="{{makeCall}}">
+      <label>Connect to: <input id=peerid></label>
+      <button>Call</button>
+    </form>
+    <peer-call-manager id=manager stream="{{stream}}" peerId="{{ownId}}" calls="{{calls}}"></peer-call-manager>
+    <template repeat="{{call in calls}}">
+      <div>
+        <h3>Call from {{call.peer}}</h3>
+        <peer-call peerStreamUrl="{{peerStreamUrl}}" mediaConnection="{{call}}"></peer-call>
+        <video autoplay src="{{peerStreamUrl}}"></video>
+      </div>
+    </template>
+  </template>
+  <script>
+    var t = window.main;
+    t.makeCall = function(e) {
+      e.preventDefault();
+      t.$.manager.call(t.$.peerid.value.trim());
+    };
+  </script>
 </body>
