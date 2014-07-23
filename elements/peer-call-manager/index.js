@@ -10,12 +10,15 @@ Polymer("peer-call-manager", {
     host: "",
     port: 9000,
     path: "",
-    calls: []
+    calls: [],
+    debug: false
   },
   setupPeer: function() {
     var el = this;
+    this._debug("Closing existing calls.");
     el.calls.forEach((call) => call.close());
     if (!el.peer) {
+      this._debug("Creating new Peer");
       var opts = {key: el.key, port: el.port, host: el.host, path: el.path};
       for (var key in opts) {
         if (opts.hasOwnProperty(key)) {
@@ -25,16 +28,26 @@ Polymer("peer-call-manager", {
         }
       }
       el.peer = new Peer(opts);
+      this._debug("Peer created: ", el.peer);
     }
     el.peer.on("error", (e) => this.fire("error", e));
     el.peer.on("open", (id) => el.peerId = id);
     el.peer.on("call", function(call) {
+      this._debug("Received call: ", call);
       call.answer(el.stream);
-      call.on("error", (e) => this.file("error", e));
+      this._debug("Call answered");
+      call.on("close", () => this.debug("Call closed"));
+      call.on("error", (e) => this.fire("error", e));
       el.calls.push(call);
     });
   },
+  _debug: function() {
+    if (this.debug) {
+      console.log.apply(console, arguments);
+    }
+  },
   remove: function(call) {
+    this._debug("Removing call: ", call);
     call.close();
     this.calls.splice(this.calls.indexOf(call), 1);
   },
@@ -42,6 +55,9 @@ Polymer("peer-call-manager", {
     var call = this.peer.call(peerId, this.stream);
     this.calls.push(call);
     return call;
+  },
+  streamChanges: function() {
+    this.setupPeer();
   },
   keyChanged: function() {
     this.setupPeer();
