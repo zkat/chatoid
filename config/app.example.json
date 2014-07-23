@@ -1,13 +1,15 @@
 {
-    "development": {
-        "httpPort": 8080,
-        "sessionSecret": "omgsupersecretpleasechangeme",
-        "passwordSecret": "omgalsosupersecretchangemetoo"
-    },
-    "production": {
-        "httpPort": 80,
-        "sessionSecret": "omgsupersecretpleasechangeme",
-        "passwordSecret": "omgalsosupersecretchangemetoo"
-    },
-    "bans": []
+  "development": {
+    "httpPort": 8080,
+    "sessionSecret": "omgsupersecretpleasechangeme",
+    "passwordSecret": "omgalsosupersecretchangemetoo",
+    "peerServerOpts": {"port": 9000, "path": "/"}
+  },
+  "production": {
+    "httpPort": 80,
+    "sessionSecret": "omgsupersecretpleasechangeme",
+    "passwordSecret": "omgalsosupersecretchangemetoo",
+    "peerServerOpts": {"port": 9000, "path": "/"}
+  },
+  "bans": []
 }
