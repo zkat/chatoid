@@ -16,7 +16,7 @@ var web = clone(webServer.WebServer, {
 });
 
 var services = {
-  chat: clone(require("./services/chat").service, "chat")
+  room: clone(require("./services/room").service, "room")
 };
 
 var echoService;
