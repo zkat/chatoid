@@ -9,18 +9,17 @@ Polymer("peer-call-manager", {
     key: "lwjd5qra8257b9",
     calls: []
   },
-  setup: function() {
+  setupPeer: function() {
     var el = this;
     el.calls.forEach((call) => call.close());
     if (!el.peer) {
       el.peer = new Peer({key: el.key});
     }
-    el.peer.on("open", function(id) {
-      el.peerId = id;
-    });
+    el.peer.on("error", (e) => this.fire("error", e));
+    el.peer.on("open", (id) => el.peerId = id);
     el.peer.on("call", function(call) {
-      console.log("Received a call: ", call);
       call.answer(el.stream);
+      call.on("error", (e) => this.file("error", e));
       el.calls.push(call);
     });
   },
@@ -33,11 +32,13 @@ Polymer("peer-call-manager", {
     this.calls.push(call);
     return call;
   },
-  keyChanged: "setup",
+  keyChanged: function() {
+    this.setupPeer();
+  },
   created: function() {
     this.calls = [];
   },
   ready: function() {
-    this.setup();
+    this.setupPeer();
   }
 });
