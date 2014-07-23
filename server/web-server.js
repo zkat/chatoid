@@ -57,12 +57,15 @@ function listen(srv, port) {
 defRoute("get", "/wsauth", function(srv, req, res) {
   var authInfo = {
     wsUrl: "http://" + req.headers.host + "/ws",
-    auth: "letmein"
+    auth: {
+      key: "letmein"
+    }
   };
   res.send({data: authInfo});
 });
 
 // This one must always be last!
+/*
 defRoute("get", "*", function(srv, req, res) {
   // Any other URLs, reroute to /#/url, to allow can.route/pushState to
   // make things awesome.
@@ -70,6 +73,7 @@ defRoute("get", "*", function(srv, req, res) {
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   res.redirect("#!"+req.url.substr(1));
 });
+ */
 
 /*
  * Util
