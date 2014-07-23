@@ -1,0 +1,13 @@
+* archive [0/0]
+* backlog [0/0]
+* active [2/5]
+** DONE node-based server                                            :server:
+   CLOSED: [2014-07-22 Tue 14:06]
+   Base it on how storychat works
+** DONE PeerJS                                                       :client:
+   CLOSED: [2014-07-22 Tue 14:06]
+   http://peerjs.com/
+** TODO Ban appeals                                                  :client:
+** TODO Video queueing system                                        :client:
+** TODO webrtc chat service                                          :server:
+   Use the webrtc data channels for p2p text messaging.
