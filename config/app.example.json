@@ -8,5 +8,6 @@
         "httpPort": 80,
         "sessionSecret": "omgsupersecretpleasechangeme",
         "passwordSecret": "omgalsosupersecretchangemetoo"
-    }
+    },
+    "bans": []
 }
