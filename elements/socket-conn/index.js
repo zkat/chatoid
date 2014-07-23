@@ -3,6 +3,7 @@ module Bacon from "bacon";
 module $ from "jquery";
 import {partial, forEach} from "lodash";
 module Q from "q";
+module Fingerprint from "fingerprint";
 import "sockjs";
 
 var Sock = window.SockJS;
@@ -12,7 +13,8 @@ Polymer("socket-conn", {
     maxReconnectAttempts: 100,
     initialReconnectDelay: 500,
     requestTimeout: 30000,
-    authUrl: "/wsauth"
+    authUrl: "/wsauth",
+    stream: null
   },
   send: send,
   request: request,
@@ -20,10 +22,11 @@ Polymer("socket-conn", {
   reconnect: function() {
     if (this.status !== "open") {
       this.reconnectAttempts = 0;
+      this.status = "reconnecting";
       tryReconnect(this);
     }
   },
-  ready: function() {
+  created: function() {
     var conn = this;
     conn._bus = new Bacon.Bus();
     conn.stream = conn._bus.toEventStream();
@@ -57,17 +60,26 @@ function initSock(conn) {
   return $.get(conn.authUrl, function(resp) {
     if (conn.status === "closed") { return; }
     conn.url = resp.data.wsUrl;
-    conn.auth = resp.data.auth;
+    conn.auth = {
+      key: resp.data.auth.key,
+      fingerprint: new Fingerprint({canvas: true}).get()
+    };
     conn.socket = new Sock(conn.url, null, conn.opts);
     conn.socket.onopen = partial(handleOpen, conn);
     conn.socket.onmessage = partial(handleMessage, conn);
     conn.socket.onclose = partial(tryReconnect, conn);
-  }).fail(partial(tryReconnect, conn));
+  }).fail(function(e) {
+    if (e.type === "fatal") {
+      console.error("Fatal error: ", e.msg);
+    } else {
+      tryReconnect(conn);
+    }
+  });
 }
 
 function handleOpen(conn) {
   conn.reconnectAttempts = 0;
-  conn.socket.send(conn.auth);
+  conn.socket.send(JSON.stringify(conn.auth));
   conn.status = "open";
   conn._bus.push({type: "status", status: conn.status});
   var oldMsg;
@@ -78,7 +90,7 @@ function handleOpen(conn) {
 }
 
 function tryReconnect(conn) {
-  if (conn.reconnectAttempts < conn.maxReconnectAttempts) {
+  if (conn.status !== "closed" && conn.reconnectAttempts < conn.maxReconnectAttempts) {
     conn.reconnectAttempts++;
     conn.status = "reconnecting";
     conn._bus.push({type: "status", status: conn.status});
@@ -94,6 +106,12 @@ function tryReconnect(conn) {
 function handleMessage(conn, sockMsg) {
   var msg = JSON.parse(sockMsg.data);
   switch (msg.type) {
+  case "fatal":
+    console.warn("Fatal error: ", msg.msg);
+    conn.status = "closed";
+    conn._bus.push({type: "status", status: conn.status});
+    conn.socket && conn.socket.close();
+    break;
   case "reply":
   case "reject":
     var req = conn.reqs[msg.req];

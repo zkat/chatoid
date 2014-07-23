@@ -10,6 +10,8 @@ var _ = require("lodash"),
     partial = _.partial,
     without = _.without;
 
+var config = require("config");
+
 var Sockjs = require("sockjs");
 
 /**
@@ -46,18 +48,22 @@ function onClientConnection(srv, conn) {
   console.log("Received connection from "+conn.remoteAddress+".");
   // TODO - wait to push until the client has been verified.
   conn.once("data", function(auth) {
+    auth = JSON.parse(auth);
     if (validAuth(srv, conn, auth)) {
       initConn(srv, conn);
       srv.connections.push(conn);
     } else {
-      conn.write("Invalid auth");
+      conn.write(JSON.stringify({type: "fatal", msg: "Invalid auth"}));
       conn.end();
     }
   });
 }
 
 function validAuth(srv, conn, auth) {
-  return auth === "letmein";
+  conn.fingerprint = auth.fingerprint;
+  return auth.key === "letmein" &&
+    auth.fingerprint &&
+    !_.contains(config.app.bans, auth.fingerprint);
 }
 
 function initConn(srv, conn) {

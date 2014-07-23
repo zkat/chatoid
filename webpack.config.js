@@ -18,6 +18,7 @@ module.exports = {
   resolve: {
     alias: {
       "lodash": "lodash/dist/lodash.js",
+      "fingerprint": "fingerprint/fingerprint.js",
       "sockjs": "sockjs/sockjs.js",
       "jquery": "jquery/dist/jquery.js",
       "bacon": "bacon/dist/Bacon.js",
