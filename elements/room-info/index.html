@@ -5,12 +5,12 @@
 <link rel=import href=../peer-call/index.html>
 <polymer-element name="room-info">
   <template>
-    <user-media id="userMedia" stream="{{mediaStream}}" src="{{mediaStreamUrl}}"></user-media>
+    <user-media id="userMedia" stream="{{mediaStream}}"></user-media>
     <socket-channel id="channel" namespace="room" conn="{{conn}}"></socket-channel>
-    <peer-call-manager id="peerManager" stream="{{mediaStream}}"
+    <peer-call-manager on-error="{{errLog}}" id="peerManager" stream="{{mediaStream}}"
                        peerId="{{peerId}}" calls="{{calls}}"></peer-call-manager>
     <template repeat="{{call in calls}}">
-      <peer-call on-error="{{errLog}}" peerId="{{call.peer}}" mediaConnection="{{call}}"></peer-call>
+      <peer-call on-error="{{errLog}}" mediaConnection="{{call}}"></peer-call>
     </template>
   </template>
   <script src=index.js></script>
