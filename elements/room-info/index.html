@@ -7,7 +7,7 @@
   <template>
     <user-media id="userMedia" stream="{{mediaStream}}"></user-media>
     <socket-channel id="channel" namespace="room" conn="{{conn}}"></socket-channel>
-    <peer-call-manager on-error="{{errLog}}" id="peerManager" stream="{{mediaStream}}"
+    <peer-call-manager id="peerManager" on-error="{{errLog}}" stream="{{mediaStream}}"
                        peerId="{{peerId}}" calls="{{calls}}"></peer-call-manager>
     <template repeat="{{call in calls}}">
       <peer-call on-error="{{errLog}}" mediaConnection="{{call}}"></peer-call>

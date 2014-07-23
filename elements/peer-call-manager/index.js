@@ -7,13 +7,24 @@ Polymer("peer-call-manager", {
     stream: null,
     peerId: "",
     key: "lwjd5qra8257b9",
+    host: "",
+    port: 9000,
+    path: "",
     calls: []
   },
   setupPeer: function() {
     var el = this;
     el.calls.forEach((call) => call.close());
     if (!el.peer) {
-      el.peer = new Peer({key: el.key});
+      var opts = {key: el.key, port: el.port, host: el.host, path: el.path};
+      for (var key in opts) {
+        if (opts.hasOwnProperty(key)) {
+          if (!opts[key]) {
+            delete opts[key];
+          }
+        }
+      }
+      el.peer = new Peer(opts);
     }
     el.peer.on("error", (e) => this.fire("error", e));
     el.peer.on("open", (id) => el.peerId = id);
