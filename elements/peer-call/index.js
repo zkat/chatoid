@@ -25,12 +25,9 @@ Polymer("peer-call", {
     }).bind(this));
   },
   call: function(force) {
-    if (this.mediaConnection && !force) {
-      this.fire("error", new Error("Call already established"));
-    } else if (this.sourcePeer && this.sourceStream && this.peerId) {
-      console.log("Calling peer: ", this.peerId);
+    if (this.sourcePeer && this.sourceStream && this.peerId) {
       this.mediaConnection = this.sourcePeer.call(this.peerId, this.sourceStream);
-    } else {
+    } else if (!this.mediaConnection){
       this.fire("error",
                 new Error("source-peer, source-stream, and peer-id are required."));
     }
