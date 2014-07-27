@@ -5,12 +5,11 @@ var Genfun = require("genfun"),
     clone = proto.clone,
     init = proto.init;
 
-var _ = require("lodash"),
-    each = _.each,
-    partial = _.partial,
-    without = _.without;
+var _ = require("lodash");
 
 var config = require("config");
+
+var Bacon = require("baconjs");
 
 var Sockjs = require("sockjs");
 
@@ -21,41 +20,46 @@ var Sockjs = require("sockjs");
 var SocketServer = clone();
 
 init.addMethod([SocketServer], function(srv, http, opts) {
-  srv.connections = [];
-  srv.services = opts.services;
   initSocket(srv, http, opts);
 });
 
-var onConnect = new Genfun(),
-    onMessage = new Genfun(),
-    onRawMessage = new Genfun(),
-    onRequest = new Genfun(),
-    onClose = new Genfun();
-onConnect.addMethod([], function() {});
-onMessage.addMethod([], function() {});
-onRawMessage.addMethod([], function() {});
-onRequest.addMethod([], function() {});
-onClose.addMethod([], function() {});
+SocketServer.use = function(middleware) {
+  return middleware(this);
+};
 
 function initSocket(srv, http, opts) {
   console.log("Initializing socketServer");
   srv.socket = Sockjs.createServer();
-  srv.socket.on("connection", partial(onClientConnection, srv));
   srv.socket.installHandlers(http, opts);
-}
-
-function onClientConnection(srv, conn) {
-  console.log("Received connection from "+conn.remoteAddress+".");
-  // TODO - wait to push until the client has been verified.
-  conn.once("data", function(auth) {
-    auth = JSON.parse(auth);
-    if (validAuth(srv, conn, auth)) {
-      initConn(srv, conn);
-      srv.connections.push(conn);
-    } else {
-      conn.write(JSON.stringify({type: "fatal", msg: "Invalid auth"}));
-      conn.end();
-    }
+  var __connSink;
+  srv.connects = Bacon.fromBinder(function(sink) {
+    __connSink = sink;
+  });
+  var __discSink;
+  srv.disconnects = Bacon.fromBinder(function(sink) {
+    __discSink = sink;
+  });
+  srv.messages = new Bacon.Bus();
+  srv.requests = new Bacon.Bus();
+  Bacon.fromEventTarget(srv.socket, "connection").onValue(function(conn) {
+    conn.once("data", function(auth) {
+      auth = JSON.parse(auth);
+      if (validAuth(srv, conn, auth)) {
+        initConn(srv, conn);
+        __connSink(conn);
+      } else {
+        console.log("Auth failure for "+conn.remoteAddress);
+        conn.write(JSON.stringify({type: "fatal", msg: "Invalid auth"}));
+        conn.end();
+      }
+    });
+    conn.on("close", function() { __discSink(conn); });
+  });
+  srv.connects.onValue(function(conn) {
+    console.log("Client at "+conn.remoteAddress+" connected.");
+  });
+  srv.disconnects.onValue(function(conn) {
+    console.log("Client at "+conn.remoteAddress+" disconnected.");
   });
 }
 
@@ -68,52 +72,30 @@ function validAuth(srv, conn, auth) {
 
 function initConn(srv, conn) {
   conn.server = srv;
-  each(srv.services, function(service) {
-    onConnect(service, conn);
+  conn.closed = Bacon.fromEventTarget(conn, "close").toProperty(false);
+  conn.open = conn.closed.not();
+  conn.data = Bacon.fromEventTarget(conn, "data").map(JSON.parse).takeWhile(conn.open);
+  conn.messages = conn.data.filter(function(msg) {
+    return msg.type === "msg";
+  }).map(function(msg) {
+    return {
+      data: msg.data,
+      from: conn,
+      namespace: msg.ns
+    };
   });
-  conn.on("data", partial(onClientMessage, srv, conn));
-  conn.on("close", partial(onClientClose, srv, conn));
-}
-
-function onClientMessage(srv, conn, msg) {
-  try {
-    var json = JSON.parse(msg),
-        service = srv.services[json.ns];
-    if (service) {
-      messageCallback(service, conn, json);
-    } else {
-      throw new Error("Invalid service: "+json.namespace);
-    }
-  } catch (e) {
-    console.error("An error occurred while processing socket message:", {
-      error: e,
-      input: msg
-    });
-  }
-}
-
-function messageCallback(service, conn, msg) {
-  switch (msg.type) {
-  case "msg":
-    onMessage(service, msg.data, {from: conn, namespace: msg.ns});
-    break;
-  case "req":
-    onRequest(service, msg.data, {from: conn, id: msg.req});
-    break;
-  default:
-    onRawMessage(service, msg, conn);
-  }
-}
-
-function onClientClose(srv, conn) {
-  console.log("Client at "+conn.remoteAddress+" disconnected.");
-  try {
-    each(srv.services, function(service) {
-      onClose(service, conn);
-    });
-  } finally {
-    srv.connections = without(srv.connections, conn);
-  }
+  srv.messages.plug(conn.messages);
+  conn.requests = conn.data.filter(function(msg) {
+    return msg.type === "req";
+  }).map(function(msg) {
+    return {
+      data: msg.data,
+      from: conn,
+      namespace: msg.ns,
+      id: msg.req
+    };
+  });
+  srv.requests.plug(conn.requests);
 }
 
 function rawSend(conn, data) {
@@ -132,31 +114,10 @@ function reject(req, reason) {
   rawSend(req.from, {type: "reject", req: req.id, data: reason});
 }
 
-function broadcast(conn, data, namespace) {
-  each(conn.server.connections, function(conn) {
-    send(conn, data, namespace);
-  });
-}
-
-function broadcastFrom(srcConn, data, namespace) {
-  each(srcConn.server.connections, function(conn) {
-    if (srcConn !== conn) {
-      send(conn, data, namespace);
-    }
-  });
-}
-
 module.exports = {
   SocketServer: SocketServer,
-  onConnect: onConnect,
-  onRawMessage: onRawMessage,
-  onMessage: onMessage,
-  onRequest: onRequest,
-  onClose: onClose,
   rawSend: rawSend,
   send: send,
   reply: reply,
-  reject: reject,
-  broadcast: broadcast,
-  broadcastFrom: broadcastFrom
+  reject: reject
 };

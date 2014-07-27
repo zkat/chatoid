@@ -33,17 +33,23 @@ Polymer("peer-call-manager", {
     el.peer.on("error", (e) => this.fire("error", e));
     el.peer.on("open", (id) => el.peerId = id);
     el.peer.on("call", function(call) {
-      this._debug("Received call: ", call);
+      el._debug("Received call: ", call);
       call.answer(el.stream);
-      this._debug("Call answered");
-      call.on("close", () => this.debug("Call closed"));
-      call.on("error", (e) => this.fire("error", e));
-      el.calls.push(call);
+      el._debug("Call answered");
+      el.handleCall(call);
     });
   },
+
+  handleCall: function(call) {
+    call.on("close", () => this._debug("Call closed"));
+    call.on("error", (e) => this.fire("error", e));
+    call.on("stream", (s) => this._debug("Stream set up: ", s));
+    this.calls.push(call);
+  },
+
   _debug: function() {
     if (this.debug) {
-      console.log.apply(console, arguments);
+      console.log.apply(console, ["[<peer-call-manager>]"].concat([].slice.call(arguments)));
     }
   },
   remove: function(call) {
@@ -51,9 +57,9 @@ Polymer("peer-call-manager", {
     call.close();
     this.calls.splice(this.calls.indexOf(call), 1);
   },
-  call: function(peerId) {
-    var call = this.peer.call(peerId, this.stream);
-    this.calls.push(call);
+  call: function(peerId, stream) {
+    var call = this.peer.call(peerId, stream || this.stream);
+    this.handleCall(call);
     return call;
   },
   streamChanges: function() {

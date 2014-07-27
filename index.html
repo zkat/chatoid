@@ -22,7 +22,7 @@
   </core-toolbar>
   <template id=main is="auto-binding">
     <socket-conn id=conn></socket-conn>
-    <room-info conn="{{$.conn}}" name="theroom" users="{{users}}"></room-info>
+    <room-info debug conn="{{$.conn}}" name="theroom" users="{{users}}"></room-info>
     <ul id=user-list>
       <template repeat="{{user in users}}">
         <li>
@@ -32,8 +32,10 @@
     </ul>
   </template>
   <script>
-    window.main.streamUrl = function(stream) {
-      return stream ? URL.createObjectURL(stream) : "";
-    }
+    window.addEventListener('polymer-ready', function(e) {
+      window.main.streamUrl = function(stream) {
+        return stream ? URL.createObjectURL(stream) : "";
+      }
+    });
   </script>
 </body>

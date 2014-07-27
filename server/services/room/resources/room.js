@@ -22,8 +22,7 @@ var MAX_ROOM_NAME_LENGTH = 200;
 
 module.exports = {
   join: function(roomService, data, req) {
-    var user = req.from,
-        room;
+    var user = req.from;
     if (data.key.length > MAX_ROOM_NAME_LENGTH) {
       return reject(req, {msg: "Room name too long"});
     }
@@ -37,18 +36,19 @@ module.exports = {
         users: [],
         bans: []
       };
+      console.log("Room created: ", data.key);
     }
-    room = roomService.rooms[data.key];
-    if (_.contains(room, req.from.fingerprint)) {
+    var room = roomService.rooms[data.key];
+    if (_.contains(room.bans, req.from.fingerprint)) {
       return reject(req, {msg: "You are banned."});
     }
     req.from.name = "boringname-"+(++room.maxId);
     req.from.peerId = data.peerId;
     req.from.room = room;
-    room.users.push(req.from);
     _.forEach(room.users, function(user) {
       send(user, {type: "join", data: _.pick(req.from, ["name", "key", "peerId"])}, "room");
     });
+    room.users.push(req.from);
     req.from.on("close", function() {
       if (req.from.room === room) {
         room.users = _.without(room.users, req.from);
