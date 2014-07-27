@@ -35,6 +35,16 @@ Polymer("user-media", {
   streamError: function(e) {
     this.fire("error", e);
   },
+  audioChanged: function() {
+    if (this.stream) {
+      [].forEach.call(this.stream.getAudioTracks(), (t) => t.enabled = this.audio);
+    }
+  },
+  videoChanged: function() {
+    if (this.stream) {
+      [].forEach.call(this.stream.getVideoTracks(), (t) => t.enabled = this.video);
+    }
+  },
   ready: function() {
     this.reload();
   },

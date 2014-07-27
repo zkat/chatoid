@@ -4,9 +4,8 @@ var proto = require("proto"),
     clone = proto.clone,
     init = proto.init;
 
-var socketServer = require("../../socket-server"),
-    onMessage = socketServer.onMessage,
-    broadcast = socketServer.broadcast;
+var SocketServer = require("../../socket-server"),
+    send = SocketServer.send;
 
 var EchoService = clone();
 
@@ -14,8 +13,16 @@ init.addMethod([EchoService], function(chat) {
   console.log("Initializing EchoService", chat);
 });
 
-onMessage.addMethod([EchoService], function(chat, data, info) {
-  broadcast(info.from, data, info.namespace);
-});
+function installService(echoService, namespace, socketServer) {
+  socketServer.requests.filter(function(msg) {
+    return msg.namespace === namespace;
+  }).onValue(function(msg) {
+    send(msg.from, msg.data, namespace);
+  });
+}
 
-module.exports.service = EchoService;
+module.exports = function(namespace) {
+  return function(socketServer) {
+    return installService(clone(EchoService), namespace, socketServer);
+  };
+};
