@@ -42,7 +42,7 @@
       <p id="username">{{user.name}}</p>
       <div id="video-wrapper">
         <video autoplay src="{{user.stream | streamUrl}}"></video>
-        <paper-icon-button icon="av:videocam"></paper-icon-button>
+        <paper-icon-button icon="{{user.video | videoIcon}}" on-click="{{toggleVideo}}"></paper-icon-button>
       </div>
     </div>
   </template>
