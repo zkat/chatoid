@@ -1,8 +1,6 @@
+module Polymer from "polymer";
 Polymer("hello-world", {
-  viewModel: {
-    name: "Kat"
-  },
   ready: function() {
-    alert("Hello world!");
+    console.log("Hello world!");
   }
 });
