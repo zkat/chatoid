@@ -3,13 +3,30 @@
   <template>
     <style>
       #wrapper {
-        border: solid 1px hotpink;
+        border: solid 1px #085E55;
+        position: relative;
+      }
+      #video-wrapper {
+        background-color: black;
+        width: 200px;
+        height: 200px;
       }
       video { height: 200px; width: 200px; }
+      #username {
+        color: white;
+        position: absolute;
+        opacity: .8;
+        top: 0;
+        left: 0;
+        margin: .5em;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
     </style>
     <div id="wrapper">
-      <p>{{user.name}}</p>
-      <video autoplay src="{{user.stream | streamUrl}}"></video>
+      <p id="username">{{user.name}}</p>
+      <div id="video-wrapper">
+        <video autoplay src="{{user.stream | streamUrl}}"></video>
+      </div>
     </div>
   </template>
   <script src=index.js></script>
