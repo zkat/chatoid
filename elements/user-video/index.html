@@ -1,4 +1,10 @@
 <link rel=import href=../../bower_components/polymer/polymer.html>
+<link rel="import" href="../../bower_components/core-icon/core-icon.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/core-iconset/core-iconset.html">
+<link rel="import" href="../../bower_components/core-iconset-svg/core-iconset-svg.html">
+<link rel="import" href="../../bower_components/core-icons/iconsets/av-icons.html">
+<link rel=import href=../../bower_components/paper-icon-button/paper-icon-button.html>
 <polymer-element name="user-video">
   <template>
     <style>
@@ -21,11 +27,22 @@
         margin: .5em;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       }
+      paper-icon-button::shadow core-icon {
+        fill: white;
+        opacity: .8;
+      }
+      paper-icon-button {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        margin: .5;
+      }
     </style>
     <div id="wrapper">
       <p id="username">{{user.name}}</p>
       <div id="video-wrapper">
         <video autoplay src="{{user.stream | streamUrl}}"></video>
+        <paper-icon-button icon="av:videocam"></paper-icon-button>
       </div>
     </div>
   </template>
