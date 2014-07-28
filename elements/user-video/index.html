@@ -32,35 +32,71 @@
         fill: white;
         opacity: .8;
       }
-      paper-icon-button {
-        bottom: 0;
-        margin: .5;
+      #sound-only-overlay {
         position: absolute;
+        font-size: 1.3em;
+        z-index: 2;
+        top: 0;
+        left: 0;
+        background-color: black;
+        color: red;
+        font-family: Impact, Haettenschweiler, "Franklin Gothic Bold", Charcoal, "Helvetica Inserat", "Bitstream Vera Sans Bold", "Arial Black", sans serif;
+        text-transform: uppercase;
+        line-height: 0;
+        text-align: center;
+        vertical-align: middle;
+        display: table-cell;
+        margin: auto;
+        width: 100%;
+        height: 100%;
       }
-      #video-control {
-        right: 0;
+      #sound-only-overlay > h1 {
+        font-size: 3em;
+        font-family: Consolas, monaco, monospace;
       }
-      #audio-control {
-        right: 2em;
+      #sound-only-overlay > h2 {
+        font-size: 1.2em;
+      }
+      #settings {
+        bottom: 0;
+        position: absolute;
+        width: 100%;
+        z-index: 3;
+      }
+      #settings > *,
+      #settings core-collapse paper-icon-button {
+        display: inline-block;
       }
     </style>
     <div id="wrapper">
       <p id="username">{{user.name}}</p>
       <div id="video-wrapper">
         <video autoplay src="{{user.stream | streamUrl}}"></video>
-        <paper-icon-button id="settings-toggle"
-                           icon="settings"
-                           on-click="{{toggleSettings}}"></paper-icon-button>
-        <core-collapse horizontal id="settings">
-          <paper-icon-button id="video-control"
-                             icon="{{user.video | videoIcon}}"
-                             on-click="{{toggleVideo}}">
-          </paper-icon-button>
-          <paper-icon-button id="audio-control"
-                             icon="{{user.audio | audioIcon}}"
-                             on-click="{{toggleAudio}}">
-          </paper-icon-button>
-        </core-collapse>
+        <template if="{{!user.video}}">
+          <div id=sound-only-overlay>
+            <h2>{{user.name}}</h4>
+            <h1>01</h1>
+            <h2>Sound</h4>
+            <h2>Only</h$>
+          </div>
+        </template>
+        <div id=settings>
+          <paper-icon-button id="settings-toggle"
+                             icon="settings"
+                             on-click="{{toggleSettings}}"></paper-icon-button>
+          <div>
+            <core-collapse id="settingsCollapse">
+              <paper-icon-button id="video-control"
+                                 icon="{{user.video | videoIcon}}"
+                                 on-click="{{toggleVideo}}">
+              </paper-icon-button>
+              <paper-icon-button id="audio-control"
+                                 icon="{{user.audio | audioIcon}}"
+                                 on-click="{{toggleAudio}}">
+              </paper-icon-button>
+            </core-collapse>
+          </div>
+        </div>
       </div>
     </div>
   </template>
