@@ -6,7 +6,19 @@ Polymer("room-user", {
   },
   observe: {
     "user.audio": "userAudioChanged",
-    "user.video": "userVideoChanged"
+    "user.video": "userVideoChanged",
+    user: "ensureMediaFlags"
+  },
+  ready: function() {
+    this.ensureMediaFlags();
+  },
+  ensureMediaFlags: function() {
+    if (!this.user.hasOwnProperty("audio")) {
+      this.user.audio = true;
+    }
+    if (!this.user.hasOwnProperty("video")) {
+      this.user.video = true;
+    }
   },
   userVideoChanged: function() {
     if (this.user.stream) {
