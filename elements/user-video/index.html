@@ -19,6 +19,7 @@
         height: 200px;
       }
       video { height: 200px; width: 200px; }
+      video.local { transform: scaleX(-1); -webkit-transform: scaleX(-1); }
       #username {
         color: white;
         position: absolute;
@@ -71,7 +72,7 @@
     <div id="wrapper">
       <p id="username">{{user.name}}<template if="{{user.originalStream}}"> (You)</template></p>
       <div id="video-wrapper">
-        <video autoplay src="{{user.stream | streamUrl}}"></video>
+        <video autoplay class="{{user.originalStream ? 'local' : 'remote'}}" src="{{user.stream | streamUrl}}"></video>
         <template if="{{!user.video || !user.videoAvailable}}">
           <div id=sound-only-overlay>
             <h2>{{user.name}}</h4>
