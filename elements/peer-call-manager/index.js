@@ -19,7 +19,7 @@ Polymer("peer-call-manager", {
     el.calls.forEach((call) => call.close());
     if (!el.peer) {
       this._debug("Creating new Peer");
-      var opts = {key: el.key, port: el.port, host: el.host, path: el.path};
+      var opts = {key: el.key, port: el.port, host: el.host, path: el.path, debug: el.debug ? 2 : 0};
       for (var key in opts) {
         if (opts.hasOwnProperty(key)) {
           if (!opts[key]) {
