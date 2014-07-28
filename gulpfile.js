@@ -9,7 +9,7 @@ var gulp = require("gulp"),
     webpackConfig = require("./webpack.config.js");
 
 var paths = {
-  bower_components: "bower_components/*",
+  bower_components: "bower_components/*/*",
   index: "index.html",
   elements: "elements/*",
   styles: "styles/*",
