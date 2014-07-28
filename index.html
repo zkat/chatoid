@@ -15,16 +15,23 @@
   <link rel="import" href="elements/user-input/index.html">
   <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
   <link rel="import" href="bower_components/paper-shadow/paper-shadow.html">
+  <link rel="import" href="bower_components/core-splitter/core-splitter.html">
   <style>
+    html { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
     #user-list li { display: inline-block; }
-    core-toolbar {
-      background-color: #878C8F;
-    }
-    core-toolbar h1 { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    core-toolbar { background-color: #878C8F; }
     #user-list {
       background-color: #C9D1D6;
       height: 202px;
     }
+    #messages {
+      padding: .5em;
+      height: 8em;
+      background-color: #0B5E55;
+      color: white;
+    }
+    .left { width: 60%; }
+    .right { width: 60%; }
   </style>
 </head>
 <body>
@@ -45,12 +52,19 @@
           <user-video user="{{user}}"></user-video>
       </template>
     </ul>
-    <ul id=messages>
-      <template repeat="{{message in messages}}">
-        <li>
-          <user-message message="{{message}}"></user-message>
-      </template>
-    </ul>
-    <user-input roomInfo="{{$.info}}"></user-input>
+    <div horizontal layout>
+    <div class="left">
+      <ul id=messages>
+        <template repeat="{{message in messages}}">
+          <li>
+            <user-message message="{{message}}"></user-message>
+        </template>
+        <li>>
+      </ul>
+      <user-input roomInfo="{{$.info}}"></user-input>
+    </div>
+    <core-splitter direction="left"></core-splitter>
+    <div class="right" flex>
+    </div>
   </template>
 </body>
