@@ -86,6 +86,7 @@ Polymer("room-info", {
       // NOTE - I should be able to track.enabled = false, but that doesn't work
       //        on chrome. Neither does track.enable = false :(
       forEach(ownStream.getAudioTracks(), (track) => ownStream.removeTrack(track));
+      user.originalStream = this.mediaStream;
       user.stream = ownStream;
       this._debug("Own user stream updated for user: ", user);
     }

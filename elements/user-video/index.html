@@ -42,7 +42,7 @@
         color: red;
         font-family: Impact, Haettenschweiler, "Franklin Gothic Bold", Charcoal, "Helvetica Inserat", "Bitstream Vera Sans Bold", "Arial Black", sans serif;
         text-transform: uppercase;
-        line-height: 0;
+        line-height: 1px;
         text-align: center;
         vertical-align: middle;
         display: table-cell;
@@ -69,10 +69,10 @@
       }
     </style>
     <div id="wrapper">
-      <p id="username">{{user.name}}</p>
+      <p id="username">{{user.name}}<template if="{{user.originalStream}}"> (You)</template></p>
       <div id="video-wrapper">
         <video autoplay src="{{user.stream | streamUrl}}"></video>
-        <template if="{{!user.video}}">
+        <template if="{{!user.video || !user.videoAvailable}}">
           <div id=sound-only-overlay>
             <h2>{{user.name}}</h4>
             <h1>01</h1>
@@ -87,11 +87,11 @@
           <div>
             <core-collapse id="settingsCollapse">
               <paper-icon-button id="video-control"
-                                 icon="{{user.video | videoIcon}}"
+                                 icon="{{user.video && user.videoAvailable | videoIcon}}"
                                  on-click="{{toggleVideo}}">
               </paper-icon-button>
               <paper-icon-button id="audio-control"
-                                 icon="{{user.audio | audioIcon}}"
+                                 icon="{{user.audio && user.audioAvailable | audioIcon}}"
                                  on-click="{{toggleAudio}}">
               </paper-icon-button>
             </core-collapse>
