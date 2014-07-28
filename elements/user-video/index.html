@@ -32,17 +32,23 @@
         opacity: .8;
       }
       paper-icon-button {
-        position: absolute;
         bottom: 0;
-        right: 0;
         margin: .5;
+        position: absolute;
+      }
+      #video-control {
+        right: 0;
+      }
+      #audio-control {
+        right: 2em;
       }
     </style>
     <div id="wrapper">
       <p id="username">{{user.name}}</p>
       <div id="video-wrapper">
         <video autoplay src="{{user.stream | streamUrl}}"></video>
-        <paper-icon-button icon="{{user.video | videoIcon}}" on-click="{{toggleVideo}}"></paper-icon-button>
+        <paper-icon-button id="video-control" icon="{{user.video | videoIcon}}" on-click="{{toggleVideo}}"></paper-icon-button>
+        <paper-icon-button id="audio-control" icon="{{user.audio | audioIcon}}" on-click="{{toggleAudio}}"></paper-icon-button>
       </div>
     </div>
   </template>

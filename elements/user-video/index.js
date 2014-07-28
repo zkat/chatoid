@@ -12,5 +12,11 @@ Polymer("user-video", {
   },
   videoIcon: function(enabled) {
     return enabled ? 'av:videocam' : 'av:videocam-off';
+  },
+  toggleAudio: function() {
+    this.user.audio = !this.user.audio;
+  },
+  audioIcon: function(enabled) {
+    return enabled ? 'av:volume-up' : 'av:volume-off';
   }
 });
