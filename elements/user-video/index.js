@@ -20,6 +20,6 @@ Polymer("user-video", {
     return enabled ? 'av:volume-up' : 'av:volume-off';
   },
   toggleSettings: function() {
-    this.$.settings.toggle();
+    this.$.settingsCollapse.toggle();
   }
 });
