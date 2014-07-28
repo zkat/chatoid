@@ -3,6 +3,7 @@
 <link rel=import href=../socket-channel/index.html>
 <link rel=import href=../peer-call-manager/index.html>
 <link rel=import href=../peer-call/index.html>
+<link rel=import href=../room-user/index.html>
 <polymer-element name="room-info">
   <template>
     <user-media id="userMedia"
@@ -14,6 +15,9 @@
                        peerId="{{peerId}}" calls="{{calls}}"></peer-call-manager>
     <template repeat="{{call in calls}}">
       <peer-call on-error="{{errLog}}" mediaConnection="{{call}}"></peer-call>
+    </template>
+    <template repeat="{{user in users}}">
+      <room-user user="{{user}}"></room-user>
     </template>
   </template>
   <script src=index.js></script>
