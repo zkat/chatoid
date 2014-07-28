@@ -15,6 +15,11 @@
     "fingerprint": "~0.5.4",
     "core-toolbar": "Polymer/core-toolbar#~0.3.4",
     "sockjs": "~0.3.4",
-    "peerjs": "~0.3.9"
+    "peerjs": "~0.3.9",
+    "core-icon": "Polymer/core-icon#~0.3.4",
+    "core-icons": "Polymer/core-icons#~0.3.4",
+    "core-iconset": "Polymer/core-iconset#~0.3.4",
+    "core-iconset-svg": "Polymer/core-iconset-svg#~0.3.4",
+    "paper-icon-button": "Polymer/paper-icon-button#~0.3.4"
   }
 }
