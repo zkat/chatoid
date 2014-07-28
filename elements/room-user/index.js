@@ -7,6 +7,7 @@ Polymer("room-user", {
   observe: {
     "user.audio": "userAudioChanged",
     "user.video": "userVideoChanged",
+    "user.stream": "userStreamChanged",
     user: "ensureMediaFlags"
   },
   created: function() {
@@ -21,17 +22,38 @@ Polymer("room-user", {
       this.user.video = true;
     }
   },
+  userStreamChanged: function() {
+    // TODO - handles tracks being added/removed
+    var stream = this.user.originalStream || this.user.stream;
+    if (stream) {
+      var user = this.user;
+      [].forEach.call(stream.getVideoTracks(), function(track) {
+        var checker = () => user.videoAvailable = track.readyState === "live";
+        checker();
+        Object.observe(track, (changes) => console.log(changes));
+      });
+      [].forEach.call(stream.getAudioTracks(), function(track) {
+        var checker = () => user.audioAvailable = track.readyState === "live";
+        checker();
+        track.addEventListener("started", checker);
+        track.addEventListener("muted", checker);
+        track.addEventListener("unmuted", checker);
+      });
+    }
+  },
   userVideoChanged: function() {
     this.ensureMediaFlags();
-    if (this.user.stream) {
-      [].forEach.call(this.user.stream.getVideoTracks(),
+    var stream = this.user.originalStream || this.user.stream;
+    if (stream) {
+      [].forEach.call(stream.getVideoTracks(),
                       (t) => t.enabled = this.user.video);
     }
   },
   userAudioChanged: function() {
     this.ensureMediaFlags();
-    if (this.user.stream) {
-      [].forEach.call(this.user.stream.getAudioTracks(),
+    var stream = this.user.originalStream || this.user.stream;
+    if (stream) {
+      [].forEach.call(stream.getAudioTracks(),
                       (t) => t.enabled = this.user.audio);
     }
   }
