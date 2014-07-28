@@ -1,0 +1,16 @@
+<link rel=import href=../../bower_components/polymer/polymer.html>
+<polymer-element name="user-video">
+  <template>
+    <style>
+      #wrapper {
+        border: solid 1px hotpink;
+      }
+      video { height: 200px; width: 200px; }
+    </style>
+    <div id="wrapper">
+      <p>{{user.name}}</p>
+      <video autoplay src="{{user.stream | streamUrl}}"></video>
+    </div>
+  </template>
+  <script src=index.js></script>
+</polymer-element>

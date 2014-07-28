@@ -10,9 +10,9 @@
   <link rel="import" href="bower_components/polymer/polymer.html">
   <link rel="import" href="elements/socket-conn/index.html">
   <link rel="import" href="elements/room-info/index.html">
+  <link rel="import" href="elements/user-video/index.html">
   <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
   <style>
-    video { height: 200px; width: 200px; }
     #user-list li { display: inline-block; }
   </style>
 </head>
@@ -26,16 +26,8 @@
     <ul id=user-list>
       <template repeat="{{user in users}}">
         <li>
-          <p>{{user.name}}</p>
-          <video autoplay src="{{user.stream | streamUrl}}"></video>
+          <user-video user="{{user}}"></user-video>
       </template>
     </ul>
   </template>
-  <script>
-    window.addEventListener('polymer-ready', function(e) {
-      window.main.streamUrl = function(stream) {
-        return stream ? URL.createObjectURL(stream) : "";
-      }
-    });
-  </script>
 </body>
