@@ -1,0 +1,12 @@
+<link rel=import href=../../bower_components/polymer/polymer.html>
+<link rel=import href=../../bower_components/paper-input/paper-input.html>
+<polymer-element name="user-input">
+  <template>
+    <style>
+    </style>
+    <form id=form on-submit="{{sendMessage}}">
+      <paper-input id=input on-keypress="{{maybeSubmit}}" multiline floatingLabel label="{{roomInfo.user.name}}"></paper-input>
+    </form>
+  </template>
+  <script src=index.js></script>
+</polymer-element>

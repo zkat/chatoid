@@ -11,6 +11,8 @@
   <link rel="import" href="elements/socket-conn/index.html">
   <link rel="import" href="elements/room-info/index.html">
   <link rel="import" href="elements/user-video/index.html">
+  <link rel="import" href="elements/user-message/index.html">
+  <link rel="import" href="elements/user-input/index.html">
   <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
   <style>
     #user-list li { display: inline-block; }
@@ -23,11 +25,23 @@
   </core-toolbar>
   <template id=main is="auto-binding">
     <socket-conn id=conn></socket-conn>
-    <room-info debug conn="{{$.conn}}" name="theroom" users="{{users}}"></room-info>
+    <room-info id=info conn="{{$.conn}}"
+               name="theroom"
+               users="{{users}}"
+               messages="{{messages}}"
+               debug>
+    </room-info>
     <ul id=user-list>
       <template repeat="{{user in users}}"><li>
           <user-video user="{{user}}"></user-video>
       </template>
     </ul>
+    <ul id=messages>
+      <template repeat="{{message in messages}}">
+        <li>
+          <user-message message="{{message}}"></user-message>
+      </template>
+    </ul>
+    <user-input roomInfo="{{$.info}}"></user-input>
   </template>
 </body>

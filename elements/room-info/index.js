@@ -9,7 +9,9 @@ Polymer("room-info", {
   publish: {
     conn: null,
     name: undefined,
+    user: null,
     users: [],
+    messages: [],
     debug: false,
     video: true,
     audio: true
@@ -20,9 +22,11 @@ Polymer("room-info", {
    */
   ready: function() {
     this.users = [];
+    this.messages = [];
     this._bus = new Bacon.Bus();
     this.joins = this._bus.filter((msg) => msg.type === "join").map(".data");
     this.parts = this._bus.filter((msg) => msg.type === "part").map(".data");
+    this.messageStream = this._bus.filter((msg) => msg.type === "message").map(".data");
     var ri = this;
     this._channelChanges = this._bus.filter((msg) => msg.type === "__channelChanged").map(".data");
     this._channelChanges.onValue(function(chan) {
@@ -33,6 +37,7 @@ Polymer("room-info", {
     this.channelChanged();
     this.joins.onValue(this.userJoined.bind(this));
     this.parts.onValue(this.userParted.bind(this));
+    this.messageStream.onValue((msg) => this.messages.push(msg));
     this.joinRoom();
   },
 
@@ -68,8 +73,14 @@ Polymer("room-info", {
     }).done();
   },
 
+  sendMessage: function(content) {
+    if (!this.$.channel) { return; }
+    this.$.channel.send({cmd: "message", content: content});
+  },
+
   updateOwnUserStream: function() {
     var user = find(this.users, {peerId: this.peerId});
+    this.user = user;
     if (user && this.mediaStream) {
       var ownStream = this.mediaStream.clone();
       // NOTE - I should be able to track.enabled = false, but that doesn't work

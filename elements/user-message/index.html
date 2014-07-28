@@ -1,0 +1,13 @@
+<link rel=import href=../../bower_components/polymer/polymer.html>
+<polymer-element name="user-message">
+  <template>
+    <style>
+      #user {
+        font-weight: bold;
+      }
+    </style>
+    <span id=user>{{message.user.name}}</span>
+    <span id=content>{{message.content}}</span>
+  </template>
+  <script src=index.js></script>
+</polymer-element>

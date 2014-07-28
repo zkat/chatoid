@@ -9,10 +9,11 @@ Polymer("room-user", {
     "user.video": "userVideoChanged",
     user: "ensureMediaFlags"
   },
-  ready: function() {
+  created: function() {
     this.ensureMediaFlags();
   },
   ensureMediaFlags: function() {
+    if (!this.user) { return; }
     if (!this.user.hasOwnProperty("audio")) {
       this.user.audio = true;
     }
@@ -21,12 +22,14 @@ Polymer("room-user", {
     }
   },
   userVideoChanged: function() {
+    this.ensureMediaFlags();
     if (this.user.stream) {
       [].forEach.call(this.user.stream.getVideoTracks(),
                       (t) => t.enabled = this.user.video);
     }
   },
   userAudioChanged: function() {
+    this.ensureMediaFlags();
     if (this.user.stream) {
       [].forEach.call(this.user.stream.getAudioTracks(),
                       (t) => t.enabled = this.user.audio);

@@ -21,6 +21,7 @@
     "core-iconset": "Polymer/core-iconset#~0.3.4",
     "core-iconset-svg": "Polymer/core-iconset-svg#~0.3.4",
     "paper-icon-button": "Polymer/paper-icon-button#~0.3.4",
-    "core-collapse": "Polymer/core-collapse#~0.3.4"
+    "core-collapse": "Polymer/core-collapse#~0.3.4",
+    "paper-input": "Polymer/paper-input#~0.3.4"
   }
 }
