@@ -42,11 +42,11 @@ _.forEach(services, function(service) {
 
 module.exports = function(port) {
   webServer.listen(web, port || 8080);
-  var peerServer = new PeerServer(config.app.peerServerOpts);
-  peerServer.on("connection", function(id) {
-    console.log("Peer connected: ", id);
-  });
-  peerServer.on("disconnect", function(id) {
-    console.log("Peer disconnected: ", id);
-  });
+  // var peerServer = new PeerServer(config.app.peerServerOpts);
+  // peerServer.on("connection", function(id) {
+  //   console.log("Peer connected: ", id);
+  // });
+  // peerServer.on("disconnect", function(id) {
+  //   console.log("Peer disconnected: ", id);
+  // });
 };
