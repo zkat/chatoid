@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/core-iconset/core-iconset.html">
 <link rel="import" href="../../bower_components/core-iconset-svg/core-iconset-svg.html">
 <link rel="import" href="../../bower_components/core-icons/iconsets/av-icons.html">
+<link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
 <link rel=import href=../../bower_components/paper-icon-button/paper-icon-button.html>
 <polymer-element name="user-video">
   <template>
@@ -47,8 +48,19 @@
       <p id="username">{{user.name}}</p>
       <div id="video-wrapper">
         <video autoplay src="{{user.stream | streamUrl}}"></video>
-        <paper-icon-button id="video-control" icon="{{user.video | videoIcon}}" on-click="{{toggleVideo}}"></paper-icon-button>
-        <paper-icon-button id="audio-control" icon="{{user.audio | audioIcon}}" on-click="{{toggleAudio}}"></paper-icon-button>
+        <paper-icon-button id="settings-toggle"
+                           icon="settings"
+                           on-click="{{toggleSettings}}"></paper-icon-button>
+        <core-collapse horizontal id="settings">
+          <paper-icon-button id="video-control"
+                             icon="{{user.video | videoIcon}}"
+                             on-click="{{toggleVideo}}">
+          </paper-icon-button>
+          <paper-icon-button id="audio-control"
+                             icon="{{user.audio | audioIcon}}"
+                             on-click="{{toggleAudio}}">
+          </paper-icon-button>
+        </core-collapse>
       </div>
     </div>
   </template>

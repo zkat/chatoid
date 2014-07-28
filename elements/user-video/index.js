@@ -18,5 +18,8 @@ Polymer("user-video", {
   },
   audioIcon: function(enabled) {
     return enabled ? 'av:volume-up' : 'av:volume-off';
+  },
+  toggleSettings: function() {
+    this.$.settings.toggle();
   }
 });
