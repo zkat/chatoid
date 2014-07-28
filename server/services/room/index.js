@@ -58,6 +58,9 @@ function installService(roomService, namespace, socketServer) {
   roomService.requests = socketServer.requests.filter(function(msg) {
     return msg.namespace === namespace;
   });
+  roomService.messages = socketServer.messages.filter(function(msg) {
+    return msg.namespace === namespace;
+  });
   
   // TODO - move these out
   roomService.joins = filterCommand(roomService.requests, "join").map(function(req) {
@@ -80,6 +83,7 @@ function installService(roomService, namespace, socketServer) {
       fingerprint: req.from.fingerprint
     });
     room.users.push(user);
+    req.from.user = user;
     req.from.rooms = _.union(req.from.rooms||[], [room]);
     if (isUserBanned(user, room)) {
       return {req: req, accepted: false, reason: "Connections from you are banned"};
@@ -122,6 +126,13 @@ function installService(roomService, namespace, socketServer) {
     }
   });
   roomService.namesReqs.onValue(respondToCommand);
+
+  roomService.messageMsgs = filterCommand(roomService.messages, "message").map(function(msg) {
+    return {content: msg.data.content, user: msg.from.user};
+  });
+  roomService.messageMsgs.onValue(function(msg) {
+    broadcastToRoom(roomService, msg.user.room, "message", msg);
+  });
 }
 
 function broadcastToRoom(roomService, room, type, data) {
