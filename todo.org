@@ -1,13 +1,38 @@
-* archive [0/0]
-* backlog [0/0]
-* active [2/5]
+* archive [3/3]
 ** DONE node-based server                                            :server:
    CLOSED: [2014-07-22 Tue 14:06]
    Base it on how storychat works
 ** DONE PeerJS                                                       :client:
    CLOSED: [2014-07-22 Tue 14:06]
    http://peerjs.com/
+** DONE Basic text chat                                              :client:
+   CLOSED: [2014-07-28 Mon 18:05]
+* backlog [0/3]
 ** TODO Ban appeals                                                  :client:
 ** TODO Video queueing system                                        :client:
+   As in, youtube/vimeo/etc queueing.
 ** TODO webrtc chat service                                          :server:
    Use the webrtc data channels for p2p text messaging.
+* active [1/13]
+** DONE Fix the app on firefox                                       :client:
+   CLOSED: [2014-07-29 Tue 01:30]
+** TODO Use socket messages to notify of remote muting               :client:
+** TODO Run peerjs server locally                                    :server:
+   Preferably on the same port, so it doesn't get blocked.
+** TODO Look into running a TURN server                              :server:
+   The TURN server is needed for routing data from behind a firewall
+** TODO Route-based rooms                                             :rooms:
+** TODO Explicit camera broadcasts                                    :video:
+   Only start streaming if a user has chosen to broadcast
+** TODO User names                                                    :rooms:
+   Allow users to change their usernames
+** TODO User accounts                                               :account:
+   Allow users to create accounts
+** TODO Mod status                                                    :rooms:
+   Account-based +o
+** TODO Auto-scroll chatbox                                            :chat:
+** TODO Private messages                                               :chat:
+** TODO Ban system                                                    :rooms:
+   Room ops should be able to ban others.
+** TODO Disable broadcasting                                          :rooms:
+   Allow channel operators to disable broadcasts by certain users.
