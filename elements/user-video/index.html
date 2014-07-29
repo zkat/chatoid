@@ -43,10 +43,8 @@
         color: red;
         font-family: Impact, Haettenschweiler, "Franklin Gothic Bold", Charcoal, "Helvetica Inserat", "Bitstream Vera Sans Bold", "Arial Black", sans serif;
         text-transform: uppercase;
-        line-height: 1px;
         text-align: center;
         vertical-align: middle;
-        display: table-cell;
         margin: auto;
         width: 100%;
         height: 100%;
@@ -70,13 +68,28 @@
       }
     </style>
     <div id="wrapper">
-      <p id="username">{{user.name}}<template if="{{user.originalStream}}"> (You)</template></p>
+      <p id="username">{{user.name}}<template if="{{user.isLocal}}"> (You)</template></p>
       <div id="video-wrapper">
-        <video autoplay class="{{user.originalStream ? 'local' : 'remote'}}" src="{{user.stream | streamUrl}}"></video>
+        <!-- Have to do it this way because ?= is buggy on firefox. Sigh -->
+        <template if="{{user.isLocal}}">
+          <video muted
+                 autoplay
+                 class="local"
+                 src="{{user.stream | streamUrl}}">
+          </video>
+        </template>
+        <template if="{{!user.isLocal}}">
+          <video autoplay
+                 class="remote"
+                 src="{{user.stream | streamUrl}}">
+          </video>
+        </template>
         <template if="{{!user.video || !user.videoAvailable}}">
           <div id=sound-only-overlay>
+            <!--
             <h2>{{user.name}}</h4>
             <h1>01</h1>
+            -->
             <h2>Sound</h4>
             <h2>Only</h$>
           </div>

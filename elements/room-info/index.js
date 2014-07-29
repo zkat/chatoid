@@ -56,7 +56,7 @@ Polymer("room-info", {
   },
   
   joinRoom: function() {
-    if (!this.conn || !this.peerId || !this.$.channel) { return; }
+    if (!this.conn || !this.peerId || !this.$ || !this.$.channel) { return; }
     var roomInfo = this;
     roomInfo._debug("Joining room: ", this.name);
     roomInfo.$.channel.request({
@@ -66,7 +66,7 @@ Polymer("room-info", {
     }).then(function(info) {
       roomInfo._debug("Channel joined. Info: ", info);
       roomInfo.users = info.room.users;
-      roomInfo.updateOwnUserStream();
+      roomInfo.updateOwnUser();
     }, function(e) {
       roomInfo._debug("Channel join error: ", e);
       roomInfo.fire("error", e);
@@ -78,22 +78,17 @@ Polymer("room-info", {
     this.$.channel.send({cmd: "message", content: content});
   },
 
-  updateOwnUserStream: function() {
+  updateOwnUser: function() {
     var user = find(this.users, {peerId: this.peerId});
     this.user = user;
-    if (user && this.mediaStream) {
-      var ownStream = this.mediaStream.clone();
-      // NOTE - I should be able to track.enabled = false, but that doesn't work
-      //        on chrome. Neither does track.enable = false :(
-      forEach(ownStream.getAudioTracks(), (track) => ownStream.removeTrack(track));
-      user.originalStream = this.mediaStream;
-      user.stream = ownStream;
-      this._debug("Own user stream updated for user: ", user);
+    if (user) {
+      user.isLocal = true;
+      user.stream = this.mediaStream;
     }
   },
 
   mediaStreamChanged: function() {
-    this.updateOwnUserStream();
+    this.updateOwnUser();
     this._debug("Closing all calls");
     forEach(this.calls, (call) => call.close());
     this._debug("Calling all users: ", this.users);
@@ -114,17 +109,17 @@ Polymer("room-info", {
     this._debug("User joined:", user);
     this.callUser(user);
     this.users.push(user);
+    this.updateOwnUser();
   },
 
   callsChanged: function() {
     this._debug("Calls changed");
-    this.calls.forEach(function(call) {
+    (this.calls || []).forEach(function(call) {
       var user = find(this.users, {peerId: call.peer});
       if (user) {
         call.on("stream", (stream) => user.stream = stream);
       }
     }, this);
-    this.updateOwnUserStream();
   },
 
   userParted: function(user) {

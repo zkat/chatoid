@@ -48,7 +48,7 @@ init.addMethod([User], function(user, opts) {
 });
 
 serialize.addMethod([User], function(user) {
-  return serialize(_.pick(user, ["name", "peerId"]));
+  return serialize(_.pick(user, ["name", "peerId", "videoAvailable", "audioAvailable"]));
 });
 
 function installService(roomService, namespace, socketServer) {
@@ -80,6 +80,8 @@ function installService(roomService, namespace, socketServer) {
       conn: req.from,
       room: room,
       ready: false,
+      audioAvailable: true,
+      videoAvailable: true,
       fingerprint: req.from.fingerprint
     });
     room.users.push(user);
