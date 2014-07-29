@@ -49,30 +49,31 @@
                messages="{{messages}}"
                debug>
     </room-info>
-    <ul id=user-videos>
-      <paper-shadow z="1"></paper-shadow>
-      <template repeat="{{user in users}}"><li>
-          <user-video user="{{user}}"></user-video>
-      </template>
-    </ul>
-    <div horizontal layout>
-      <div flex>
-        <ul id=messages>
-          <template repeat="{{message in messages}}">
-            <li>
-              <user-message message="{{message}}"></user-message>
-          </template>
-          <li>>
-        </ul>
-        <user-input roomInfo="{{$.info}}"></user-input>
-      </div>
-      <core-splitter direction="left"></core-splitter>
-      <div>
-        <ul id=user-list>
-          <template repeat="{{user in users}}">
-            <li>{{user.name}}
-          </template>
-        </ul>
+    <div vertical layout>
+      <ul id=user-videos>
+        <paper-shadow z="1"></paper-shadow>
+        <template repeat="{{user in users}}"><li>
+            <user-video user="{{user}}"></user-video>
+        </template>
+      </ul>
+      <div horizontal layout>
+        <div flex>
+          <ul id=messages>
+            <template repeat="{{message in messages}}">
+              <li>
+                <user-message message="{{message}}"></user-message>
+            </template>
+            <li>>
+          </ul>
+          <user-input roomInfo="{{$.info}}"></user-input>
+        </div>
+        <div>
+          <ul id=user-list>
+            <template repeat="{{user in users}}">
+              <li>{{user.name}}
+            </template>
+          </ul>
+        </div>
       </div>
     </div>
   </template>
