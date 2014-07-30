@@ -1,0 +1,41 @@
+<link rel=import href=../../bower_components/polymer/polymer.html>
+<link rel=import href=../user-media/index.html>
+<link rel=import href=../socket-channel/index.html>
+<link rel=import href=../peer-call-manager/index.html>
+<link rel=import href=../peer-call/index.html>
+<link rel=import href=../room-user/index.html>
+<polymer-element name="room-messages">
+  <template>
+    <style>
+      #messages {
+        padding: .5em;
+        height: 8em;
+        background-color: #0B5E55;
+        color: white;
+        overflow-y: scroll;
+      }
+    </style>
+    <socket-conn id=conn></socket-conn>
+    <room-info id=info conn="{{$.conn}}"
+               name="theroom"
+               users="{{users}}"
+               messages="{{messages}}"
+               debug>
+    </room-info>
+    <user-media id="userMedia"
+                audio="{{audio}}"
+                video="{{video}}"
+                stream="{{mediaStream}}"></user-media>
+    <socket-channel id="channel" namespace="room" conn="{{conn}}"></socket-channel>
+    <peer-call-manager id="peerManager" on-error="{{errLog}}" debug stream="{{mediaStream}}"
+                       peerId="{{peerId}}" calls="{{calls}}"></peer-call-manager>
+    <ul id=messages>
+      <template repeat="{{message in messages}}">
+        <li>
+          <user-message message="{{message}}"></user-message>
+      </template>
+      <li>>
+    </ul>
+  </template>
+  <script src=index.js></script>
+</polymer-element>
