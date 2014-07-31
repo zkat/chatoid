@@ -1,0 +1,22 @@
+<link rel=import href=../../bower_components/polymer/polymer.html>
+<link rel=import href=../user-message/index.html>
+<polymer-element name="room-messages">
+  <template>
+    <style>
+      #messages {
+        padding: .5em;
+        height: 8em;
+        background-color: #0B5E55;
+        color: white;
+        overflow-y: scroll;
+      }
+      user-message { display: block; }
+    </style>
+    <div id="messages">
+      <template repeat="{{message in messages}}">
+        <user-message message="{{message}}"></user-message>
+      </template>
+    </div>
+  </template>
+  <script src=index.js></script>
+</polymer-element>
