@@ -45,12 +45,16 @@ Polymer("peer-call-manager", {
       el.peer = new Peer(opts);
       this._debug("Peer created: ", el.peer);
     }
-    el.peer.on("error", (e) => this.fire("error", e));
-    el.peer.on("open", (id) => el.peerId = id);
-    el.peer.on("disconnect", () => {
-      this._debug("Disconnected from server. Attempting reconnect");
-      el.peer.reconnect();
+    el.peer.on("error", (e) => {
+      if (e.type === "disconnect" || e.type === "network") {
+        if (el.peer.disconnected) {
+          this._debug("Disconnected from server. Attempting reconnect");
+          el.peer.reconnect();
+        }
+      }
+      this.fire("error", e);
     });
+    el.peer.on("open", (id) => el.peerId = id);
     el.peer.on("call", function(call) {
       el._debug("Received call: ", call);
       call.answer(el.stream);
