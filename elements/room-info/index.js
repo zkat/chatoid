@@ -143,7 +143,7 @@ Polymer("room-info", {
 
   userParted: function(user) {
     this._debug("User parted: ", user);
-    var userIdx = findIndex(this.users, {name: user.name});
+    var userIdx = findIndex(this.users, {peerId: user.peerId});
     if (~userIdx) {
       this.users.splice(userIdx, 1);
     }
