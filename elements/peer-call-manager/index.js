@@ -12,7 +12,7 @@ Polymer("peer-call-manager", {
     // path: "",
     key: "peerjs",
     host: window.location.hostname,
-    port: window.location.port,
+    port: window.location.port || 80,
     path: "/_peerjs/",
     calls: [],
     debug: false
