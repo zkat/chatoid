@@ -48,7 +48,7 @@ init.addMethod([User], function(user, opts) {
 });
 
 serialize.addMethod([User], function(user) {
-  return serialize(_.pick(user, ["name", "peerId", "videoAvailable", "audioAvailable"]));
+  return serialize(_.pick(user, ["name", "peerId", "audioAvailable", "videoAvailable"]));
 });
 
 function installService(roomService, namespace, socketServer) {
@@ -134,6 +134,15 @@ function installService(roomService, namespace, socketServer) {
   });
   roomService.messageMsgs.onValue(function(msg) {
     broadcastToRoom(roomService, msg.user.room, "message", msg);
+  });
+
+  roomService.muteStatus = filterCommand(roomService.messages, "mute").map(function(msg) {
+    msg.from.user.audioAvailable = msg.data.audioAvailable;
+    msg.from.user.videoAvailable = msg.data.videoAvailable;
+    return msg.from.user;
+  });
+  roomService.muteStatus.onValue(function(user) {
+    broadcastToRoom(roomService, user.room, "userUpdate", user);
   });
 }
 
