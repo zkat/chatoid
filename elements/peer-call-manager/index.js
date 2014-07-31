@@ -47,6 +47,10 @@ Polymer("peer-call-manager", {
     }
     el.peer.on("error", (e) => this.fire("error", e));
     el.peer.on("open", (id) => el.peerId = id);
+    el.peer.on("disconnect", () => {
+      this._debug("Disconnected from server. Attempting reconnect");
+      el.peer.reconnect();
+    });
     el.peer.on("call", function(call) {
       el._debug("Received call: ", call);
       call.answer(el.stream);
@@ -74,7 +78,9 @@ Polymer("peer-call-manager", {
   },
   call: function(peerId, stream) {
     var call = this.peer.call(peerId, stream || this.stream);
-    this.handleCall(call);
+    if (call) {
+      this.handleCall(call);
+    }
     return call;
   },
   streamChanges: function() {
