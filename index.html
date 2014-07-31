@@ -11,7 +11,6 @@
   <link rel="import" href="elements/socket-conn/index.html">
   <link rel="import" href="elements/room-info/index.html">
   <link rel="import" href="elements/user-video/index.html">
-  <link rel="import" href="elements/user-message/index.html">
   <link rel="import" href="elements/user-input/index.html">
   <link rel="import" href="elements/room-messages/index.html">
   <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
@@ -60,7 +59,7 @@
       </ul>
       <div horizontal layout>
         <div flex>
-          <room-messages message="{{messages}}"></room-messages>
+          <room-messages messages="{{messages}}"></room-messages>
           <user-input roomInfo="{{$.info}}"></user-input>
         </div>
         <div>
