@@ -6,10 +6,14 @@ Polymer("peer-call-manager", {
     peer: null,
     stream: null,
     peerId: "",
-    key: "lwjd5qra8257b9",
-    host: "",
-    port: 9000,
-    path: "",
+    // key: "lwjd5qra8257b9",
+    // host: "",
+    // port: 9000,
+    // path: "",
+    key: "peerjs",
+    host: window.location.hostname,
+    port: window.location.port,
+    path: "/_peerjs/",
     calls: [],
     debug: false
   },
@@ -65,8 +69,11 @@ Polymer("peer-call-manager", {
   streamChanges: function() {
     this.setupPeer();
   },
-  keyChanged: function() {
-    this.setupPeer();
+  observe: {
+    "key": "setupPeer",
+    "host": "setupPeer",
+    "port": "setupPeer",
+    "path": "setupPeer"
   },
   created: function() {
     this.calls = [];

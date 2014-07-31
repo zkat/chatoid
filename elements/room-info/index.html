@@ -11,8 +11,12 @@
                 video="{{video}}"
                 stream="{{mediaStream}}"></user-media>
     <socket-channel id="channel" namespace="room" conn="{{conn}}"></socket-channel>
-    <peer-call-manager id="peerManager" on-error="{{errLog}}" debug stream="{{mediaStream}}"
-                       peerId="{{peerId}}" calls="{{calls}}"></peer-call-manager>
+    <peer-call-manager id="peerManager"
+                       on-error="{{errLog}}"
+                       debug
+                       stream="{{mediaStream}}"
+                       peerId="{{peerId}}"
+                       calls="{{calls}}"></peer-call-manager>
     <template repeat="{{call in calls}}">
       <peer-call on-error="{{errLog}}" mediaConnection="{{call}}"></peer-call>
     </template>
