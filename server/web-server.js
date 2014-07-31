@@ -6,11 +6,12 @@ var proto = require("proto"),
 
 var lodash = require("lodash"),
     each = lodash.each,
-    partial = lodash.partial;
+    partial = lodash.partial,
+    extend = lodash.extend;
 
-var express = require("express"),
-    http = require("http"),
-    sessionStore = require("session");
+var sessionStore = require("session");
+
+var PeerServer = require("peer").PeerServer;
 
 var config = require("config");
 
@@ -21,16 +22,13 @@ var WebServer = clone(),
     routes = [];
 
 init.addMethod([WebServer], function(srv, opts) {
-  srv.app = express();
-  srv.http = http.createServer(srv.app);
-  configureApp(srv, opts);
+  srv.opts = opts;
 });
 
 function configureApp(srv, opts) {
   srv.sessionStore = sessionStore();
   var app = srv.app;
   app.use(require("morgan")(config.env === "production" ? "short" : "dev"));
-  app.use(require("body-parser")());
   app.use(require("cookie-parser")());
   app.use(require("express-session")({
     store: srv.sessionStore,
@@ -46,9 +44,13 @@ function configureApp(srv, opts) {
 }
 
 function listen(srv, port) {
-  srv.http.listen(port, function() {
-    console.log("Listening on "+port);
-  });
+  srv.app = PeerServer(extend({
+    path: "/_peerjs/",
+    key: "peerjs",
+    port: port
+  }, srv.opts));
+  configureApp(srv, srv.opts);
+  srv.http = srv.app._server;
 }
 
 /*
