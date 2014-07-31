@@ -12,6 +12,7 @@ Polymer("room-info", {
     user: null,
     users: [],
     messages: [],
+    maxMessages: 1000,
     debug: false,
     video: true,
     audio: true
@@ -37,7 +38,9 @@ Polymer("room-info", {
     this.channelChanged();
     this.joins.onValue(this.userJoined.bind(this));
     this.parts.onValue(this.userParted.bind(this));
-    this.messageStream.onValue((msg) => this.messages.push(msg));
+    this.messageStream
+      .slidingWindow(this.maxMessages)
+      .onValue((msgs) => this.messages = msgs);
     this.joinRoom();
   },
 
