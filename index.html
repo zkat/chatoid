@@ -11,8 +11,8 @@
   <link rel="import" href="elements/socket-conn/index.html">
   <link rel="import" href="elements/room-info/index.html">
   <link rel="import" href="elements/user-video/index.html">
-  <link rel="import" href="elements/user-message/index.html">
   <link rel="import" href="elements/user-input/index.html">
+  <link rel="import" href="elements/room-messages/index.html">
   <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
   <link rel="import" href="bower_components/paper-shadow/paper-shadow.html">
   <link rel="import" href="bower_components/core-splitter/core-splitter.html">
@@ -29,6 +29,7 @@
       height: 8em;
       background-color: #0B5E55;
       color: white;
+      overflow-y: scroll;
     }
     #user-list {
       padding: 1em;
@@ -58,13 +59,7 @@
       </ul>
       <div horizontal layout>
         <div flex>
-          <ul id=messages>
-            <template repeat="{{message in messages}}">
-              <li>
-                <user-message message="{{message}}"></user-message>
-            </template>
-            <li>>
-          </ul>
+          <room-messages messages="{{messages}}"></room-messages>
           <user-input roomInfo="{{$.info}}"></user-input>
         </div>
         <div>
