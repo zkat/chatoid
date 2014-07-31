@@ -11,7 +11,8 @@ Polymer("user-input", {
     this.$.input.commit();
   },
   maybeSubmit: function(ev) {
-    if (ev.keyCode === 13 && !ev.shiftKey) {
+    if (ev.keyCode === 13 && !ev.shiftKey &&
+        this.$.input && this.$.input.inputValue) {
       ev.preventDefault();
       this.$.input.commit();
       this.sendMessage();
