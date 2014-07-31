@@ -1,6 +1,6 @@
 module Polymer from "polymer";
 module Bacon from "bacon";
-import {findIndex, find, forEach, remove} from "lodash";
+import {findIndex, find, forEach, remove, extend} from "lodash";
 
 Polymer("room-info", {
   /*
@@ -28,6 +28,7 @@ Polymer("room-info", {
     this.joins = this._bus.filter((msg) => msg.type === "join").map(".data");
     this.parts = this._bus.filter((msg) => msg.type === "part").map(".data");
     this.messageStream = this._bus.filter((msg) => msg.type === "message").map(".data");
+    this.userUpdates = this._bus.filter((msg) => msg.type === "userUpdate").map(".data");
     var ri = this;
     this._channelChanges = this._bus.filter((msg) => msg.type === "__channelChanged").map(".data");
     this._channelChanges.onValue(function(chan) {
@@ -41,6 +42,10 @@ Polymer("room-info", {
     this.messageStream
       .slidingWindow(this.maxMessages)
       .onValue((msgs) => this.messages = msgs);
+    this.userUpdates.onValue((user) => {
+      var _user = find(this.users||[], {peerId: user.peerId});
+      if (_user) { extend(_user, user); }
+    });
     this.joinRoom();
   },
 
@@ -51,7 +56,9 @@ Polymer("room-info", {
     "$.channel": "channelChanged",
     name: "joinRoom",
     conn: "joinRoom",
-    peerId: "joinRoom"
+    peerId: "joinRoom",
+    "user.audio": "notifyMute",
+    "user.video": "notifyMute"
   },
 
   channelChanged: function() {
@@ -76,13 +83,22 @@ Polymer("room-info", {
     }).done();
   },
 
+  notifyMute: function() {
+    if (!this.$.channel) { return; }
+    this.$.channel.send({
+      cmd: "mute",
+      audioAvailable: this.user.audio,
+      videoAvailable: this.user.video
+    });
+  },
+
   sendMessage: function(content) {
     if (!this.$.channel) { return; }
     this.$.channel.send({cmd: "message", content: content});
   },
 
   updateOwnUser: function() {
-    var user = find(this.users, {peerId: this.peerId});
+    var user = find(this.users||[], {peerId: this.peerId});
     this.user = user;
     if (user) {
       user.isLocal = true;
