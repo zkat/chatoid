@@ -23,7 +23,19 @@ Polymer("peer-call-manager", {
     el.calls.forEach((call) => call.close());
     if (!el.peer) {
       this._debug("Creating new Peer");
-      var opts = {key: el.key, port: el.port, host: el.host, path: el.path, debug: el.debug ? 2 : 0};
+      var opts = {
+        key: el.key,
+        port: el.port,
+        host: el.host,
+        path: el.path,
+        debug: el.debug ? 2 : 0,
+        config: {
+          iceServers: [
+            { url: 'stun:stun.l.google.com:19302' },
+            { url: 'turn:192.81.132.20:3478' }
+          ]
+        }
+      };
       for (var key in opts) {
         if (opts.hasOwnProperty(key)) {
           if (!opts[key]) {
