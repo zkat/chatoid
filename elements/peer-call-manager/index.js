@@ -31,8 +31,7 @@ Polymer("peer-call-manager", {
         debug: el.debug ? 2 : 0,
         config: {
           iceServers: [
-            { url: 'stun:stun.l.google.com:19302' },
-            { url: 'turn:192.81.132.20:3478' }
+            { url: 'stun:stun.l.google.com:19302' }
           ]
         }
       };
